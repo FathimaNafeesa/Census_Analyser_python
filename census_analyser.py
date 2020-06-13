@@ -1,15 +1,19 @@
 import csv
+from census_analyser_exceptions import *
 
 
 class CensusAnalyser:
     def __init__(self, file_name, rows=[]):
-        # reading csv file
-        with open(file_name, 'r') as csv_file:
-            csv_reader = csv.reader(csv_file)
-            fields = next(csv_reader)
-            for row in csv_reader:
-                rows.append(row)
-        self.total_records = csv_reader.line_num
+        try:
+            # reading csv file
+            with open(file_name, 'r') as csv_file:
+                csv_reader = csv.reader(csv_file)
+                fields = next(csv_reader)
+                for row in csv_reader:
+                    rows.append(row)
+            self.total_records = csv_reader.line_num
+        except FileNotFoundError as exception:
+            raise FileNotCorrectError
 
 
 class CSVStateCensus(CensusAnalyser):
@@ -19,5 +23,6 @@ class CSVStateCensus(CensusAnalyser):
         print(number_of_records)
 
 
-OBJ = CSVStateCensus('CSV files/StateCensusData.csv')
-OBJ.get_number_of_records()
+if __name__ == '__main__':
+    csv_read = CSVStateCensus('CSV files/StateCensusData.csv')
+    csv_read.get_number_of_records()
