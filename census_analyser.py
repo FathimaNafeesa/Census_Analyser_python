@@ -16,7 +16,17 @@ class CSVStateCensus(CensusAnalyser):
     # getting number of records
     def get_number_of_records(self):
         number_of_records = self.state_data_csv.last_valid_index()
-        print(number_of_records+1)
+        return number_of_records+1
+
+
+
+class CSVStateCode(CensusAnalyser):
+    # getting number of records
+    def get_number_of_records(self):
+        number_of_records = self.state_data_csv.last_valid_index()
+        return number_of_records + 1
+
+    def
 
 
 if __name__ == '__main__':
