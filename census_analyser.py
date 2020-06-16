@@ -1,17 +1,13 @@
 import csv
 from census_analyser_exceptions import *
+import pandas as pd
 
 
 class CensusAnalyser:
-    def __init__(self, file_name, rows=[]):
+    def __init__(self, file_path):
         try:
             # reading csv file
-            with open(file_name, 'r') as csv_file:
-                csv_reader = csv.reader(csv_file)
-                fields = next(csv_reader)
-                for row in csv_reader:
-                    rows.append(row)
-            self.total_records = csv_reader.line_num
+            self.state_data_csv = pd.read_csv(file_path)
         except FileNotFoundError as exception:
             raise FileNotCorrectError
 
@@ -19,8 +15,8 @@ class CensusAnalyser:
 class CSVStateCensus(CensusAnalyser):
     # getting number of records
     def get_number_of_records(self):
-        number_of_records = self.total_records
-        print(number_of_records)
+        number_of_records = self.state_data_csv.last_valid_index()
+        print(number_of_records+1)
 
 
 if __name__ == '__main__':
