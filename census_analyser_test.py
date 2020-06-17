@@ -17,7 +17,6 @@ class CensusAnalyserTest(unittest.TestCase):
         result = csv_read.get_number_of_records_and_sort()
         assert result == 37
 
-    # for
 
 
 if __name__ == '__main__':
