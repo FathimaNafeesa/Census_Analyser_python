@@ -26,8 +26,8 @@ class CSVHandler(StateCensusAnalyser, StateCensusAnalyser):
         return number_of_records + 1
 
     @staticmethod
-    def sort_data_frame(census_file, column_name):
-        sorted_data = census_file.sort_values(column_name)
+    def sort_data_frame(census_file, column_name, order=True):
+        sorted_data = census_file.sort_values(column_name, ascending=order)
         sorted_data.to_json(
             r'C:\Users\FATHIMA\PycharmProjects\Census-Analyser\sorted_json_files\stateCensusSorted.json')
         return sorted_data
@@ -55,7 +55,7 @@ class _CensusAnalyser(CSVHandler):
         self.get_number_of_records()
 
     def sort_in_alphabetical_order(self):
-        self.sort_data_frame(self.state_census_csv,'State')
+        self.sort_data_frame(self.state_census_csv, 'State')
 
     def get_map_of_state_and_census_data(self):
         print("Select the required format: \n 1.Dictionary \n 2.json \n 3.csv")
@@ -65,7 +65,8 @@ class _CensusAnalyser(CSVHandler):
     def sort_according_to_population_density(self):
         self.sort_data_frame(self.state_census_csv, 'population')
 
-    def
+    def sort_according_to_area(self):
+        self.sort_data_frame(self.state_census_csv, 'Area', False)
 
 
 
