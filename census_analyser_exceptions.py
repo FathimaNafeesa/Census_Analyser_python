@@ -6,6 +6,7 @@ class ExceptionType(enum.Enum):
     NOT_REQUIRED_FILE_TYPE = '.CSV'
     NO_SUCH_FILE = 'no file'
     HEADER_ERROR = 'Header error'
+    NO_COLUMN_FOUND_MATCH = 'UN IDENTIFIED COLUMN'
 
 
 class CensusAnalyserException(Exception):  # user defined exceptions

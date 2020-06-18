@@ -1,5 +1,7 @@
 import re
 from census_analyser_exceptions import *
+from census_analyser import *
+import pandas as pd
 
 
 class DAOClass(object):
@@ -16,27 +18,19 @@ class DAOClass(object):
             self.DensityPerSqKm = column_name
 
         elif re.search(r'(AreaInSqKm|Total area)', str(column_name)):
-            self.area = column_name
+            self.AreaInSqKm = column_name
 
         elif re.search(r'(population| population density)', str(column_name)):
-            self.population = column_name
+            self.Population = column_name
         else:
-            raise CensusAnalyserException()
+            raise CensusAnalyserException(ExceptionType.NO_COLUMN_FOUND_MATCH, "Column unidentified")
 
-    def getColumn(self):
+    def get_column(self):
 
-        if 'State' in dir(self):
-            return self.State
-        elif 'StateCode' in dir(self):
-            return self.StateCode
-        elif 'population' in dir(self):
-            return self.population
-        elif 'DensityPerSqKm' in dir(self):
-            return self.DensityPerSqKm
-        elif 'DensityPerSqKm' in dir(self):
-            return self.DensityPerSqKm
-        elif 'area' in dir(self):
-            return self.area
+        column_list = [self.State, self.StateCode, self.Population, self.DensityPerSqKm, self.AreaInSqKm]
+        for column_name in column_list:
+            if str(column_name) in dir(self):
+                return column_name
         else:
             return None
 

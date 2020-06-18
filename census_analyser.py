@@ -1,27 +1,50 @@
+from dao_class_census_analyser import *
 import pandas as pd
-from census_analyser_exceptions import *
 
 
-class StateCensusAnalyser:
-    def __init__(self, file_path):
+class StateCensusLoader:
+    def __init__(self, ):
+        self.State = "State"
+        self.Population = "Population"
+        self.DensityPerSqKm = "DensityPerSqKm"
+        self.AreaInSqKm = "AreaInSqKm"
+        self.data_frame = None
+
+    def __repr__(self):
+        return self.State + "," + self.Population + "," + self.DensityPerSqKm + "," + self.AreaInSqKm
+
+    def __call__(self, file_path):
         try:
-            self.state_census_csv = pd.read_csv(file_path)
+            column_list = repr(StateCensusLoader()).split(",")
+            self.data_frame = pd.read_csv(file_path, usecols=column_list)
+            return self.data_frame
         except IOError:
             check_exceptions_type(file_path)
 
 
-class StateCodeAnalyser:
-    def __init__(self, file_path):
+class StateCodeLoader:
+    def __init__(self):
+        self.SrNo = "SrNo"
+        self.State = "State"
+        self.StateCode = "StateCode"
+        self.TIN = "TIN"
+
+    def __repr__(self):
+        return self.SrNo + "," + self.State + "," + self.StateCode + "," + self.TIN
+
+    def __call__(self, file_path):
         try:
-            self.state_census_csv = pd.read_csv(file_path)
+            column_list = repr(StateCodeLoader).split(",")
+            self.data_frame = pd.read_csv(file_path, usecols=column_list)
+            return self.data_frame
         except IOError:
             check_exceptions_type(file_path)
 
 
-class CSVHandler(StateCensusAnalyser, StateCensusAnalyser):
+class CSVHandler(StateCensusLoader, StateCodeLoader):
 
     @staticmethod
-    def get_number_of_records(census_file):
+    def get_number_of_record(census_file):
         number_of_records = census_file.last_valid_index()
         return number_of_records + 1
 
@@ -33,10 +56,10 @@ class CSVHandler(StateCensusAnalyser, StateCensusAnalyser):
         return sorted_data
 
     @staticmethod
-    def get_map_of_state_and_census_file(self, format_of_file):
-        dictionary = self.state_data_csv.to_dict()
-        json_file = self.state_data_csv.to_json()
-        csv_file = self.state_data_csv.to_csv()
+    def get_map_of_state_and_census_file(data_frame, format_of_file):
+        dictionary = data_frame.to_dict()
+        json_file = data_frame.to_json()
+        csv_file = data_frame.to_csv()
 
         def get_map(format_of_file_=format_of_file):
             switcher = {
@@ -46,29 +69,29 @@ class CSVHandler(StateCensusAnalyser, StateCensusAnalyser):
             }
             return switcher[format_of_file_]
 
-        print(get_map())
+        return get_map()
 
 
-class _CensusAnalyser(CSVHandler):
+class CensusAnalyser:
+    def __init__(self, class_name, file_path):
+        variable = class_name()
+        self.data_frame = variable(file_path)
 
     def get_number_of_records(self):
-        self.get_number_of_records()
+        return CSVHandler.get_number_of_record(self.data_frame)
 
     def sort_in_alphabetical_order(self):
-        self.sort_data_frame(self.state_census_csv, 'State')
+        return CSVHandler.sort_data_frame(self.data_frame, 'State')
 
     def get_map_of_state_and_census_data(self):
         print("Select the required format: \n 1.Dictionary \n 2.json \n 3.csv")
         format_of_file = int(input("Format required:"))
-        self.get_map_of_state_and_census_file(format_of_file)
+        return CSVHandler.get_map_of_state_and_census_file(self.data_frame, format_of_file)
 
     def sort_according_to_population_density(self):
-        self.sort_data_frame(self.state_census_csv, 'population')
+        return CSVHandler.sort_data_frame(self.data_frame, 'Population')
 
     def sort_according_to_area(self):
-        self.sort_data_frame(self.state_census_csv, 'Area', False)
-
-
-
+        return CSVHandler.sort_data_frame(self.data_frame, 'AreaInSqKm', False)
 
 
