@@ -1,85 +1,35 @@
-from dao_class_census_analyser import *
+
 import pandas as pd
 
+from census_analyser_adapter import CensusAdapter
+from dto_class_census import *
+from census_analyser_exceptions import *
 
-class StateCensusLoader:
-    def __init__(self, ):
-        self.State = "State"
-        self.Population = "Population"
-        self.DensityPerSqKm = "DensityPerSqKm"
-        self.AreaInSqKm = "AreaInSqKm"
-        self.data_frame = None
 
-    def __repr__(self):
-        return self.State + "," + self.Population + "," + self.DensityPerSqKm + "," + self.AreaInSqKm
+class CensusDataLoader:
 
-    def __call__(self, file_path):
+    def __call__(self, file_path, dto):
+        column_list = repr(dto()).split(",")
+        print(column_list)
         try:
-            column_list = repr(StateCensusLoader()).split(",")
-            self.data_frame = pd.read_csv(file_path, usecols=column_list)
+            self.data_frame = pd.read_csv(file_path, sep=",", usecols=column_list)
+            CensusAdapter.get_dao_data_frame(str(dto), self.data_frame)
             return self.data_frame
-        except IOError:
+        except FileNotFoundError:
             check_exceptions_type(file_path)
+        except ValueError:
+            raise CensusAnalyserException(ExceptionType.DELIMITER_ERROR, "Wrong delimiter")
 
 
-class StateCodeLoader:
-    def __init__(self):
-        self.SrNo = "SrNo"
-        self.State = "State"
-        self.StateCode = "StateCode"
-        self.TIN = "TIN"
-
-    def __repr__(self):
-        return self.SrNo + "," + self.State + "," + self.StateCode + "," + self.TIN
-
-    def __call__(self, file_path):
-        try:
-            column_list = repr(StateCodeLoader).split(",")
-            self.data_frame = pd.read_csv(file_path, usecols=column_list)
-            return self.data_frame
-        except IOError:
-            check_exceptions_type(file_path)
-
-
-class USStateCodeLoader:
-    def __init__(self):
-        self.State_id = "State Id"
-        self.State = "State"
-        self.Population = "Population"
-        self.Housing_units = "Housing units"
-        self.Total_area = "Total area"
-        self.Water_area = "Water area"
-        self.Land_area = "Land area"
-        self.Population_density = "Population Density"
-        self.Housing_density = "Housing Density"
-
-    def __repr__(self):
-        return self.State_id + "," + self.State + "," + self.Population + "," + self.Housing_units + "," \
-               + self.Total_area + "," + self.Water_area + "," + self.Land_area + "," + self.Population_density + "," \
-               + self.Housing_density
-
-    def __call__(self, file_path):
-        try:
-            column_list = repr(USStateCodeLoader()).split(",")
-            print(column_list)
-            self.data_frame = pd.read_csv(file_path, usecols=column_list)
-
-            print(self.data_frame)
-            return self.data_frame
-        except IOError:
-            check_exceptions_type(file_path)
-
-
-class CSVHandler(StateCensusLoader, StateCodeLoader, USStateCodeLoader):
+class CSVHandler(CensusDataLoader):
 
     @staticmethod
-    def get_number_of_record(census_file):
-        number_of_records = census_file.last_valid_index()
-        return number_of_records + 1
+    def get_number_of_record(census_data_frame):
+        return census_data_frame.shape[0]
 
     @staticmethod
-    def sort_data_frame(census_file, column_name, order=True):
-        sorted_data = census_file.sort_values(column_name, ascending=order)
+    def sort_data_frame(census_data_frame, column_name, order=True):
+        sorted_data = census_data_frame.sort_values(column_name, ascending=order)
         sorted_data.to_json(
             r'C:\Users\FATHIMA\PycharmProjects\Census-Analyser\sorted_json_files\stateCensusSorted.json')
         return sorted_data
@@ -124,9 +74,5 @@ class CensusAnalyser:
         return CSVHandler.sort_data_frame(self.data_frame, 'AreaInSqKm', False)
 
 
-obj = CensusAnalyser(USStateCodeLoader, 'CSV_files/USCensusData (1).csv')
-
-obj.get_number_of_records()
-obj.sort_in_alphabetical_order()
-obj.get_map_of_state_and_census_data()
-obj.sort_according_to_population_density()
+a = CensusDataLoader()
+print(a('CSV_files/USCensusData (1).csv', USStateCodeDTO))
