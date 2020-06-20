@@ -7,13 +7,15 @@ class ExceptionType(enum.Enum):
     NO_SUCH_FILE = 'no file'
     HEADER_ERROR = 'Header error'
     NO_COLUMN_FOUND_MATCH = 'UN IDENTIFIED COLUMN'
+    DELIMITER_ERROR = "delimiter wrong"
 
 
 class CensusAnalyserException(Exception):  # user defined exceptions
 
     def __init__(self, exception_type, message):
         self.message = message
-        self.ExceptionType = exception_type
+        self.ExceptionType \
+            = exception_type
 
 
 def check_exceptions_type(file_path):
