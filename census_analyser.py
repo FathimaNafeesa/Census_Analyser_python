@@ -1,4 +1,3 @@
-
 import pandas as pd
 
 from census_analyser_adapter import CensusAdapter
@@ -10,10 +9,9 @@ class CensusDataLoader:
 
     def __call__(self, file_path, dto):
         column_list = repr(dto()).split(",")
-        print(column_list)
         try:
             self.data_frame = pd.read_csv(file_path, sep=",", usecols=column_list)
-            CensusAdapter.get_dao_data_frame(str(dto), self.data_frame)
+            self.data_frame = CensusAdapter.get_dao_data_frame(str(dto), self.data_frame)
             return self.data_frame
         except FileNotFoundError:
             check_exceptions_type(file_path)
@@ -52,9 +50,9 @@ class CSVHandler(CensusDataLoader):
 
 
 class CensusAnalyser:
-    def __init__(self, class_name, file_path):
-        variable = class_name()
-        self.data_frame = variable(file_path)
+    def __init__(self, file_path, dto):
+        variable = CensusDataLoader()
+        self.data_frame = variable(file_path, dto)
 
     def get_number_of_records(self):
         return CSVHandler.get_number_of_record(self.data_frame)
@@ -71,8 +69,14 @@ class CensusAnalyser:
         return CSVHandler.sort_data_frame(self.data_frame, 'Population')
 
     def sort_according_to_area(self):
-        return CSVHandler.sort_data_frame(self.data_frame, 'AreaInSqKm', False)
+        return CSVHandler.sort_data_frame(self.data_frame, 'AreaInSqKm',
+                                          False)  # boolean is for specifying the order of sort(default true)
+
+    def to_find_most_populous_state(self):
+        sorted_data = CSVHandler.sort_data_frame(self.data_frame, 'Population')
+        return sorted_data.iloc[0]
 
 
-a = CensusDataLoader()
-print(a('CSV_files/USCensusData (1).csv', USStateCodeDTO))
+obj_1 = CensusAnalyser('CSV_files/USCensusData (1).csv', USStateCodeDTO)
+print(obj_1.to_find_most_populous_state())
+obj_1.get_map_of_state_and_census_data()
