@@ -50,27 +50,37 @@ class CSVHandler(CensusDataLoader):
 
 
 class CensusAnalyser:
+
     def __init__(self, file_path, dto):
         variable = CensusDataLoader()
         self.data_frame = variable(file_path, dto)
+        self.dto = dto
+
+    def __repr__(self):
+        self.data_frame = CensusAdapter.set_dto_data_frame(self.dto, self.data_frame)
+        return self.data_frame
 
     def get_number_of_records(self):
         return CSVHandler.get_number_of_record(self.data_frame)
 
     def sort_in_alphabetical_order(self):
-        return CSVHandler.sort_data_frame(self.data_frame, 'State')
+        self.data_frame = CSVHandler.sort_data_frame(self.data_frame, 'States')
+        return CensusAnalyser.__repr__(self)
 
     def get_map_of_state_and_census_data(self):
         print("Select the required format: \n 1.Dictionary \n 2.json \n 3.csv")
         format_of_file = int(input("Format required:"))
-        return CSVHandler.get_map_of_state_and_census_file(self.data_frame, format_of_file)
+        self.data_frame = CensusAnalyser.__repr__(self)
+        return repr(CSVHandler.get_map_of_state_and_census_file(self.data_frame, format_of_file))
 
     def sort_according_to_population_density(self):
-        return CSVHandler.sort_data_frame(self.data_frame, 'Population')
+        self.data_frame = CSVHandler.sort_data_frame(self.data_frame, 'Population')
+        return CensusAnalyser.__repr__(self)
 
     def sort_according_to_area(self):
-        return CSVHandler.sort_data_frame(self.data_frame, 'AreaInSqKm',
-                                          False)  # boolean is for specifying the order of sort(default true)
+        self.data_frame = CSVHandler.sort_data_frame(self.data_frame, 'AreaInSqKm', False)
+        return CensusAnalyser.__repr__(self)
+        # boolean is for specifying the order of sort(default true)
 
     def to_find_most_populous_state(self):
         sorted_data = CSVHandler.sort_data_frame(self.data_frame, 'Population')
@@ -79,4 +89,4 @@ class CensusAnalyser:
 
 obj_1 = CensusAnalyser('CSV_files/USCensusData (1).csv', USStateCodeDTO)
 print(obj_1.to_find_most_populous_state())
-obj_1.get_map_of_state_and_census_data()
+print(obj_1.sort_in_alphabetical_order())
