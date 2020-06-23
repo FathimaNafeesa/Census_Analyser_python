@@ -16,6 +16,5 @@ class CensusAdapter:
         if data_frame is None:
             return None
         column_list_ = repr(dto()).split(",")
-        print(column_list_)
         data_frame.columns = column_list_
         return data_frame
